@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Data files
+data/
+*.csv
+*.parquet
+
+# MLflow
+mlflow.db
+mlruns/
+
+# Spark
+spark-warehouse/
+
+# OS
+Thumbs.db
+.DS_Store
