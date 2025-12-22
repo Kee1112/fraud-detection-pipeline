@@ -100,6 +100,19 @@ def build_features(input_path):
             1
     ).otherwise(0)
    )
+
+    df = df.withColumn(
+    "repeat_user_fast",
+    when(col("tx_count_user_1h") > 3, 1).otherwise(0)
+   )
+    df = df.withColumn(
+    "merchant_risky_high_amount",
+    when(
+      (col("merchant_fraud_rate") > 0.04) & (col("amount" > 3000), 1)
+      .otherwise(0)
+
+    )
+   )
     
 
 
