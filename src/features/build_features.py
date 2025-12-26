@@ -108,11 +108,11 @@ def build_features(input_path):
     df = df.withColumn(
     "merchant_risky_high_amount",
     when(
-      (col("merchant_fraud_rate") > 0.04) & (col("amount" > 3000), 1)
+      (col("merchant_fraud_rate") > 0.04) & (col("amount") > 3000), 1)
       .otherwise(0)
 
     )
-   )
+   
     
 
 
