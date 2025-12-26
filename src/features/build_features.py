@@ -58,8 +58,8 @@ def build_features(input_path):
     df = df.withColumn("amount_log", log(col("amount") + 1))
     df = df.withColumn(
         "is_high_amount",
-        when(col("amount") > 3000, 1).otherwise(0)
-    )
+        when(col("amount")) > 3000, 1).otherwise(0)
+    
 
     # Amount vs user's recent behavior
     df = df.withColumn(
