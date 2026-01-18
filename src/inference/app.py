@@ -1,80 +1,121 @@
+
+# FastAPI inference app for Fraud Detection
+
 from fastapi import FastAPI
 from pydantic import BaseModel
+import pyspark
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import VectorAssembler, StandardScalerModel
 from pyspark.ml.classification import GBTClassificationModel
 from pyspark.sql.functions import col
-import uvicorn
+from pyspark.sql.types import StructType, StructField, DoubleType
+import os
 
-# ------------------------
+# -------------------------
 # Spark session
-# ------------------------
+# -------------------------
 spark = SparkSession.builder \
     .appName("FraudInferenceAPI") \
     .getOrCreate()
 
-# ------------------------
-# Load artifacts
-# ------------------------
-ASSEMBLER_PATH = "fraud-detection-pipeline/models/assembler"
-SCALER_PATH = "fraud-detection-pipeline/models/scaler"
-MODEL_PATH = "fraud-detection-pipeline/models/gbt_fraud_model"
+# -------------------------
+# Load saved models
+# -------------------------
+MODEL_DIR = "fraud-detection-pipeline/models"
 
-assembler = VectorAssembler.load(ASSEMBLER_PATH)
-scaler = StandardScalerModel.load(SCALER_PATH)
-model = GBTClassificationModel.load(MODEL_PATH)
+assembler = VectorAssembler.load(
+    f"{MODEL_DIR}/assembler"
+)
 
-# Feature order MUST match training
-FEATURE_COLS = assembler.getInputCols()
+scaler = StandardScalerModel.load(
+    f"{MODEL_DIR}/scaler"
+)
 
-# ------------------------
+gbt_model = GBTClassificationModel.load(
+    f"{MODEL_DIR}/gbt_fraud_model"
+)
+
+# -------------------------
 # FastAPI app
-# ------------------------
+# -------------------------
 app = FastAPI(title="Fraud Detection API")
 
-# ------------------------
-# Input schema
-# ------------------------
+# -------------------------
+# Request schema
+# -------------------------
 class Transaction(BaseModel):
     tx_count_user_1h: float
     amount_vs_user_avg_24h: float
     avg_amount_user_24h: float
     amount_vs_merchant_avg: float
     tx_count_merchant_1h: float
-    merchant_velocity_spike: int
+    merchant_velocity_spike: float
     merchant_fraud_rate: float
     amount_log: float
-    is_high_amount: int
-    foreign_high_amount: int
-    high_amount_mobile: int
-    repeat_user_fast: int
-    merchant_risky_high_amount: int
+    is_high_amount: float
+    foreign_high_amount: float
+    high_amount_mobile: float
+    repeat_user_fast: float
+    merchant_risky_high_amount: float
 
-# ------------------------
-# Prediction endpoint
-# ------------------------
-@app.post("/predict")
-def predict(tx: Transaction):
-    data = [{col: getattr(tx, col) for col in FEATURE_COLS}]
-    df = spark.createDataFrame(data)
+# -------------------------
+# Health check
+# -------------------------
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
-    df = assembler.transform(df)
-    df = scaler.transform(df)
-    preds = model.transform(df)
-
-    result = preds.select(
-        col("probability")[1].alias("fraud_probability"),
-        col("prediction")
-    ).collect()[0]
-
+# -------------------------
+# Model metadata
+# -------------------------
+@app.get("/model-info")
+def model_info():
     return {
-        "fraud_probability": float(result["fraud_probability"]),
-        "prediction": int(result["prediction"])
+        "model": "Gradient Boosted Trees",
+        "framework": "PySpark ML",
+        "features": 13,
+        "threshold": 0.5
     }
 
+# -------------------------
+# Prediction endpoint
+# -------------------------
+@app.post("/predict")
+def predict(transaction: Transaction):
+  feature_cols = [
+    "tx_count_user_1h",
+    "amount_vs_user_avg_24h",
+    "avg_amount_user_24h",
+    "amount_vs_merchant_avg",
+    "tx_count_merchant_1h",
+    "merchant_velocity_spike",
+    "merchant_fraud_rate",
+    "amount_log",
+    "is_high_amount",
+    "foreign_high_amount",
+    "high_amount_mobile",
+    "repeat_user_fast",
+    "merchant_risky_high_amount"
+]
 
-# ------------------------
-# Run locally
-# ------------------------
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+  schema = StructType([
+      StructField(c, DoubleType(), True) for c in feature_cols
+  ])
+  row = transaction.dict()
+  values = [[float(row[c]) for c in feature_cols]]
+
+
+  df = spark.createDataFrame(values, schema=schema)
+
+
+  df = assembler.transform(df)
+  df = scaler.transform(df)
+
+  preds = gbt_model.transform(df)
+
+  prob = preds.select("probability").first()[0][1]
+
+  return {
+        "fraud_probability": float(prob),
+        "is_fraud": int(prob > 0.5)
+    }
