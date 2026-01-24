@@ -1,0 +1,36 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter / Colab
+.ipynb_checkpoints/
+*.ipynb
+
+# Git
+.git/
+.gitignore
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Virtual envs
+venv/
+env/
+
+# Data (DO NOT SHIP RAW DATA)
+data/
+datasets/
+
+# Spark junk
+spark-warehouse/
+metastore_db/
+
+# Tests / experiments
+tests/
+experiments/
