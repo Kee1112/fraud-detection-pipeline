@@ -1,5 +1,9 @@
 FROM python:3.10-slim
 
+# Python env
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 # Install Java (required for Spark)
 RUN apt-get update && \
     apt-get install -y openjdk-17-jre-headless && \
@@ -15,11 +19,12 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
-COPY src /app/src
+COPY src ./src
 
-# Copy trained models (from Colab filesystem)
-COPY models /app/models
+# Copy trained models
+COPY models ./models
 
-EXPOSE 8000
+# Cloud Run / prod standard
+EXPOSE 8080
 
-CMD ["uvicorn", "src.inference.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.inference.app:app", "--host", "0.0.0.0", "--port", "8080"]
