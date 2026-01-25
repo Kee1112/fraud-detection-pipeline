@@ -14,10 +14,12 @@ import os
 # -------------------------
 # Spark session
 # -------------------------
-spark = SparkSession.builder \
-    .appName("FraudInferenceAPI") \ 
-    .master("local[*]")\
+spark = (
+    SparkSession.builder
+    .appName("FraudInferenceAPI") 
+    .master("local[*]")
     .getOrCreate()
+)
 
 # -------------------------
 # Load saved models
