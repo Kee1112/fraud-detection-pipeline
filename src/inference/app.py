@@ -21,7 +21,7 @@ spark = SparkSession.builder \
 # -------------------------
 # Load saved models
 # -------------------------
-MODEL_DIR = "fraud-detection-pipeline/models"
+MODEL_DIR = "/app/models"
 
 assembler = VectorAssembler.load(
     f"{MODEL_DIR}/assembler"
