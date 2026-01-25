@@ -16,11 +16,14 @@ import os
 # -------------------------
 spark = SparkSession.builder \
     .appName("FraudInferenceAPI") \
+#additional change master wasnt there
+    .master("local[*]")\
     .getOrCreate()
 
 # -------------------------
 # Load saved models
 # -------------------------
+#additional change was model_dir = "fraud-detection-pipleine/models"
 MODEL_DIR = "/app/models"
 
 assembler = VectorAssembler.load(
