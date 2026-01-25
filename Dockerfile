@@ -7,8 +7,11 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Upgrade pip
-RUN pip3 install --upgrade pip
+# Upgrade pip + setuptools + wheel (important for numpy)
+RUN pip3 install --upgrade pip setuptools wheel
+
+# Install numpy FIRST (binary wheel)
+RUN pip3 install --no-cache-dir numpy==1.26.4
 
 # Install Python deps
 COPY requirements.txt .
