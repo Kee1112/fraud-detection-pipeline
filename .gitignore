@@ -7,7 +7,6 @@ venv/
 # Data files
 data/
 *.csv
-*.parquet
 
 # MLflow
 mlflow.db
