@@ -1,6 +1,6 @@
-FROM python:3.10-slim
+FROM python:3.10
 
-# Install Java (needed for Spark)
+# Install Java for Spark
 RUN apt-get update && \
     apt-get install -y openjdk-17-jre-headless && \
     rm -rf /var/lib/apt/lists/*
@@ -11,8 +11,7 @@ ENV PATH="$JAVA_HOME/bin:$PATH"
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY src/ src/
 COPY models/ models/
