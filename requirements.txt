@@ -1,6 +1,4 @@
-fastapi==0.110.0
-uvicorn[standard]==0.29.0
-
-pyspark==3.5.1
-numpy>=1.23,<2.0
-pydantic==2.6.4
+fastapi
+uvicorn
+pyspark==3.5.0
+pydantic
