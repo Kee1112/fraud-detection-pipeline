@@ -25,7 +25,7 @@ spark = (
 # Load saved models
 # -------------------------
 #additional change was model_dir = "fraud-detection-pipleine/models"
-MODEL_DIR = "/app/models"
+MODEL_DIR = "/app/models_a"
 
 assembler = VectorAssembler.load(
     f"{MODEL_DIR}/assembler"
