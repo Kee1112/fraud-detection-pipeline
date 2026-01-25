@@ -1,20 +1,22 @@
-FROM python:3.10
+FROM eclipse-temurin:11-jre-jammy
 
-# Install Java for Spark
+# Install Python
 RUN apt-get update && \
-    apt-get install -y openjdk-17-jre-headless && \
+    apt-get install -y python3 python3-pip && \
     rm -rf /var/lib/apt/lists/*
-
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV PATH="$JAVA_HOME/bin:$PATH"
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Upgrade pip
+RUN pip3 install --upgrade pip
 
-COPY src/ src/
-COPY models/ models/
+# Install Python deps
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir --prefer-binary -r requirements.txt
+
+# Copy app + models
+COPY src /app/src
+COPY models /app/models
 
 EXPOSE 8000
 
