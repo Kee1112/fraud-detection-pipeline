@@ -4,8 +4,7 @@ __pycache__/
 venv/
 .env
 
-# Data files
-data/
+
 *.csv
 
 # MLflow
