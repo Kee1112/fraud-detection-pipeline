@@ -15,8 +15,7 @@ import os
 # Spark session
 # -------------------------
 spark = SparkSession.builder \
-    .appName("FraudInferenceAPI") \
-#additional change master wasnt there
+    .appName("FraudInferenceAPI") \ #additional change master wasnt there
     .master("local[*]")\
     .getOrCreate()
 
