@@ -22,14 +22,36 @@ spark = (
 )
 
 # -------------------------
+# Feature list (MUST match training order)
+# -------------------------
+FEATURE_COLS = [
+    "tx_count_user_1h",
+    "amount_vs_user_avg_24h",
+    "avg_amount_user_24h",
+    "amount_vs_merchant_avg",
+    "tx_count_merchant_1h",
+    "merchant_velocity_spike",
+    "merchant_fraud_rate",
+    "amount_log",
+    "is_high_amount",
+    "foreign_high_amount",
+    "high_amount_mobile",
+    "repeat_user_fast",
+    "merchant_risky_high_amount"
+]
+# -------------------------
+# Create assembler (NO loading)
+# -------------------------
+assembler = VectorAssembler(
+    inputCols=FEATURE_COLS,
+    outputCol="features_raw"
+)
+
+# -------------------------
 # Load saved models
 # -------------------------
 #additional change was model_dir = "fraud-detection-pipleine/models"
 MODEL_DIR = "/app/models_a"
-
-assembler = VectorAssembler.load(
-    f"{MODEL_DIR}/assembler"
-)
 
 scaler = StandardScalerModel.load(
     f"{MODEL_DIR}/scaler"
