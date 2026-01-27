@@ -19,7 +19,7 @@ RUN pip3 install --no-cache-dir --prefer-binary -r requirements.txt
 
 # Copy app + models
 COPY src /app/src
-COPY models /app/models
+COPY models /app/models_a
 
 EXPOSE 8000
 
