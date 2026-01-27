@@ -18,6 +18,8 @@ spark = (
     SparkSession.builder
     .appName("FraudInferenceAPI") 
     .master("local[*]")
+    .config("spark.ui.enabled", "false")
+    .config("spark.driver.bindAddress", "127.0.0.1")
     .getOrCreate()
 )
 
