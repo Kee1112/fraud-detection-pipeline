@@ -46,7 +46,7 @@ FEATURE_COLS = [
 # -------------------------
 assembler = VectorAssembler(
     inputCols=FEATURE_COLS,
-    outputCol="features_raw"
+    outputCol="raw_features"
 )
 
 # -------------------------
@@ -110,27 +110,12 @@ def model_info():
 # -------------------------
 @app.post("/predict")
 def predict(transaction: Transaction):
-  feature_cols = [
-    "tx_count_user_1h",
-    "amount_vs_user_avg_24h",
-    "avg_amount_user_24h",
-    "amount_vs_merchant_avg",
-    "tx_count_merchant_1h",
-    "merchant_velocity_spike",
-    "merchant_fraud_rate",
-    "amount_log",
-    "is_high_amount",
-    "foreign_high_amount",
-    "high_amount_mobile",
-    "repeat_user_fast",
-    "merchant_risky_high_amount"
-]
 
   schema = StructType([
-      StructField(c, DoubleType(), True) for c in feature_cols
+      StructField(c, DoubleType(), True) for c in FEATURE_COLS
   ])
   row = transaction.dict()
-  values = [[float(row[c]) for c in feature_cols]]
+  values = [[float(row[c]) for c in FEATURE_COLS]]
 
 
   df = spark.createDataFrame(values, schema=schema)
