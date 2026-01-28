@@ -16,10 +16,13 @@ import os
 # -------------------------
 spark = (
     SparkSession.builder
-    .appName("FraudInferenceAPI") 
-    .master("local[*]")
+    .appName("FraudInferenceAPI")
+    .master("local[1]")  # IMPORTANT: single thread
     .config("spark.ui.enabled", "false")
-    .config("spark.driver.bindAddress", "127.0.0.1")
+    .config("spark.authenticate", "false")
+    .config("spark.authenticate.secret", "")
+    .config("spark.network.crypto.enabled", "false")
+    .config("spark.network.crypto.saslFallback", "false")
     .getOrCreate()
 )
 
