@@ -1,4 +1,5 @@
 fastapi
 uvicorn
-pyspark==3.5.0
-pydantic
+numpy
+scikit-learn
+joblib

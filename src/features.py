@@ -31,8 +31,14 @@ def build_feature_vector(payload: dict) -> np.ndarray:
         payload.get("merchant_risky_high_amount", 0),
     ], dtype=float)
 
+
+    EPS = 1e-8
+    std_safe = np.where(STD == 0, EPS, STD)
+
     # Standard scaling
-    scaled = (raw_features - MEAN) / STD
+    scaled = (raw_features - MEAN) / std_safe
+
+
 
     return scaled.reshape(1, -1)
 
