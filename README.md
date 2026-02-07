@@ -137,7 +137,35 @@ Create a **Render Web Service** connected to this repo.
 ### Build Command
 
 ```
-pip install -r requirements.txt
+pip install -r requirements.txtFRAUD-DETECTION-PIPELINE/
+│
+├── models_a/
+│   ├── gbt_sklearn.joblib      # ✅ Production model (sklearn) used by API
+│   ├── scaler.json             # ✅ Feature scaling parameters used by API
+│   │
+│   ├── assembler/              # ⚠️ Spark VectorAssembler (training artifact)
+│   ├── scaler/                 # ⚠️ Spark StandardScalerModel (training artifact)
+│   ├── gbt_fraud_model/        # ⚠️ Spark GBT model (training artifact)
+│   └── lr_fraud_model/         # ⚠️ Spark Logistic Regression model (training artifact)
+│
+├── src/
+│   ├── main.py                 # ✅ FastAPI app — API endpoints (/health, /predict)
+│   ├── model.py                # ✅ Loads sklearn model for inference
+│   ├── features.py             # ✅ Builds + scales feature vector from request
+│   │
+│   ├── training/               # ⚠️ Spark model training pipeline
+│   ├── ingestion/              # ⚠️ Data ingestion logic
+│   ├── features/               # ⚠️ Spark feature engineering modules
+│   ├── inference/              # 🗑 Legacy Spark inference code (not used now)
+│   ├── data/                   # ⚠️ Training datasets / feature tables
+│   └── __pycache__/            # 🗑 Python cache
+│
+├── Dockerfile                  # ✅ Render deployment container config
+├── requirements.txt            # ✅ Dependencies for API runtime
+├── .dockerignore
+├── .gitignore
+├── LICENSE
+
 ```
 
 ### Start Command
