@@ -43,18 +43,48 @@ This avoids JVM/Spark dependencies in production.
 
 # 🗂 Project Structure
 
+```
+pip install -r requirements.txtFRAUD-DETECTION-PIPELINE/
+│
+├── models_a/
+│   ├── gbt_sklearn.joblib      # ✅ Production model (sklearn) used by API
+│   ├── scaler.json             # ✅ Feature scaling parameters used by API
+│   │
+│   ├── assembler/              # ⚠️ Spark VectorAssembler (training artifact)
+│   ├── scaler/                 # ⚠️ Spark StandardScalerModel (training artifact)
+│   ├── gbt_fraud_model/        # ⚠️ Spark GBT model (training artifact)
+│   └── lr_fraud_model/         # ⚠️ Spark Logistic Regression model (training artifact)
+│
+├── src/
+│   ├── main.py                 # ✅ FastAPI app — API endpoints (/health, /predict)
+│   ├── model.py                # ✅ Loads sklearn model for inference
+│   ├── features.py             # ✅ Builds + scales feature vector from request
+│   │
+│   ├── training/               # ⚠️ Spark model training pipeline
+│   ├── ingestion/              # ⚠️ Data ingestion logic
+│   ├── features/               # ⚠️ Spark feature engineering modules
+│   ├── inference/              # 🗑 Legacy Spark inference code (not used now)
+│   ├── data/                   # ⚠️ Training datasets / feature tables
+│   └── __pycache__/            # 🗑 Python cache
+│
+├── Dockerfile                  # ✅ Render deployment container config
+├── requirements.txt            # ✅ Dependencies for API runtime
+├── .dockerignore
+├── .gitignore
+├── LICENSE
 
+```
 
 ---
 
-#This app is live at https://fraud-detection-pipeline-1-uag0.onrender.com 
-```
+# This app is live at https://fraud-detection-pipeline-1-uag0.onrender.com 
+
 feel free to check it out :)
 to test out the predict end point 
 https://fraud-detection-pipeline-1-uag0.onrender.com/docs 
-```
 
-# ⚙️ Installation (Local)
+
+# Installation (Local)
 
 ## 1️⃣ Clone repo
 
@@ -77,7 +107,7 @@ uvicorn src.main:app --reload
 
 ---
 
-# 🧪 API Usage
+#  API Usage
 
 ## Health Check
 
@@ -130,42 +160,13 @@ POST /predict
 
 ---
 
-# 🚀 Deployment (Render)
+#  Deployment (Render)
 
 Create a **Render Web Service** connected to this repo.
 
 ### Build Command
-
-```
-pip install -r requirements.txtFRAUD-DETECTION-PIPELINE/
-│
-├── models_a/
-│   ├── gbt_sklearn.joblib      # ✅ Production model (sklearn) used by API
-│   ├── scaler.json             # ✅ Feature scaling parameters used by API
-│   │
-│   ├── assembler/              # ⚠️ Spark VectorAssembler (training artifact)
-│   ├── scaler/                 # ⚠️ Spark StandardScalerModel (training artifact)
-│   ├── gbt_fraud_model/        # ⚠️ Spark GBT model (training artifact)
-│   └── lr_fraud_model/         # ⚠️ Spark Logistic Regression model (training artifact)
-│
-├── src/
-│   ├── main.py                 # ✅ FastAPI app — API endpoints (/health, /predict)
-│   ├── model.py                # ✅ Loads sklearn model for inference
-│   ├── features.py             # ✅ Builds + scales feature vector from request
-│   │
-│   ├── training/               # ⚠️ Spark model training pipeline
-│   ├── ingestion/              # ⚠️ Data ingestion logic
-│   ├── features/               # ⚠️ Spark feature engineering modules
-│   ├── inference/              # 🗑 Legacy Spark inference code (not used now)
-│   ├── data/                   # ⚠️ Training datasets / feature tables
-│   └── __pycache__/            # 🗑 Python cache
-│
-├── Dockerfile                  # ✅ Render deployment container config
-├── requirements.txt            # ✅ Dependencies for API runtime
-├── .dockerignore
-├── .gitignore
-├── LICENSE
-
+   ```
+pip install -r requirements.txt
 ```
 
 ### Start Command
@@ -182,7 +183,7 @@ https://<service>.onrender.com/docs
 
 ---
 
-# ⚠️ Why sklearn for Inference Instead of Spark
+#  Why sklearn for Inference Instead of Spark
 
 Running Spark inside web APIs causes:
 
@@ -215,7 +216,7 @@ All features are standardized using training‑time statistics.
 
 ---
 
-# 🔐 Future Improvements
+#  Future Improvements
 
 * API key authentication
 * Rate limiting
@@ -225,6 +226,6 @@ All features are standardized using training‑time statistics.
 * Feature store integration
 
 
-# 📜 License
+#  License
 
 MIT License
